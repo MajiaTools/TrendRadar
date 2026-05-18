@@ -3670,7 +3670,8 @@ def send_to_notifications(
             html_file_path,
             email_smtp_server,
             email_smtp_port,
-            report_data,  # Pass report_data for Gmail rendering
+            report_data,
+            mode,
         )
 
     if not results:
@@ -3993,141 +3994,233 @@ def send_to_telegram(
     return True
 
 
-def convert_to_gmail_html(original_html: str, report_data: Optional[Dict] = None) -> str:
-    """
-    Convert HTML to Gmail-optimized format with inline styles.
-    Gmail strips <style> tags and doesn't support many modern CSS features,
-    so we use table-based layout with inline styles for maximum compatibility.
-    """
+def _render_email_category_card(stat: Dict) -> str:
+    """Render a single category card for the email dual-column layout."""
+    word = html_escape(stat["word"])
+    count = stat["count"]
+    titles = stat.get("titles", [])
+
+    parts = [
+        f'<table width="100%" cellpadding="0" cellspacing="0" border="0" '
+        f'style="background-color:#ffffff;border-radius:8px;border:1px solid #e2e8f0;'
+        f'overflow:hidden;margin-bottom:16px;">'
+        f'<tr><td style="padding:11px 14px 11px 17px;border-left:3px solid #6366f1;">'
+        f'<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
+        f'<td><span style="font-size:13px;font-weight:700;color:#0f172a;">{word}</span></td>'
+        f'<td align="right"><span style="font-size:10px;color:#94a3b8;font-weight:500;">'
+        f'{count} items</span></td>'
+        f'</tr></table></td></tr>'
+        f'<tr><td style="padding:4px 14px 10px 14px;">'
+    ]
+
+    for idx, title_data in enumerate(titles):
+        title = html_escape(title_data["title"])
+        source = html_escape(title_data["source_name"])
+        ranks = title_data.get("ranks", [])
+        url = title_data.get("url", "")
+        is_new = title_data.get("is_new", False)
+
+        if ranks:
+            mn, mx = min(ranks), max(ranks)
+            rank_text = f"#{mn}" if mn == mx else f"#{mn}-{mx}"
+        else:
+            rank_text = ""
+
+        row_bg = "#fffbeb" if is_new else "#f8fafc"
+        new_dot = (
+            '<span style="display:inline-block;width:6px;height:6px;'
+            'background-color:#f59e0b;border-radius:50%;margin-right:4px;'
+            'vertical-align:middle;"></span>'
+            if is_new else ""
+        )
+
+        if url:
+            title_html = (
+                f'<a href="{html_escape(url)}" style="color:#1e293b;text-decoration:none;'
+                f'font-weight:500;line-height:1.4;">{title}</a>'
+            )
+        else:
+            title_html = f'<span style="color:#1e293b;font-weight:500;line-height:1.4;">{title}</span>'
+
+        rank_html = (
+            f'<span style="color:#6366f1;font-size:10px;font-weight:700;margin-left:4px;">'
+            f'{rank_text}</span>'
+            if rank_text else ""
+        )
+
+        sep = (
+            '<tr><td colspan="2" style="padding:3px 0 0 0;border-top:1px solid #f1f5f9;'
+            'font-size:0;line-height:0;">&nbsp;</td></tr>'
+            if idx > 0 else ""
+        )
+
+        parts.append(
+            f'<table width="100%" cellpadding="0" cellspacing="0" border="0" '
+            f'style="margin-top:6px;background-color:{row_bg};border-radius:4px;">'
+            f'{sep}'
+            f'<tr valign="top">'
+            f'<td style="width:22px;padding:6px 4px 6px 2px;vertical-align:top;">'
+            f'<span style="display:inline-block;background-color:#e2e8f0;color:#64748b;'
+            f'font-size:10px;font-weight:700;width:18px;height:18px;line-height:18px;'
+            f'text-align:center;border-radius:3px;">{idx + 1}</span>'
+            f'</td>'
+            f'<td style="padding:5px 0;vertical-align:top;">'
+            f'<div style="margin-bottom:3px;">'
+            f'<span style="background-color:#f1f5f9;color:#64748b;font-size:10px;'
+            f'padding:2px 6px;border-radius:3px;">{source}</span>{rank_html}'
+            f'</div>'
+            f'<div style="font-size:13px;color:#1e293b;">{new_dot}{title_html}</div>'
+            f'</td></tr></table>'
+        )
+
+    parts.append("</td></tr></table>")
+    return "".join(parts)
+
+
+def convert_to_gmail_html(
+    original_html: str,
+    report_data: Optional[Dict] = None,
+    mode: str = "daily",
+) -> str:
+    """Build a responsive dual-column email from report_data."""
     if not report_data:
-        # Fallback if no report_data provided
         return original_html
-    
-    # Build Gmail-compatible HTML with actual news content
-    html_parts = []
-    
-    # Header
-    html_parts.append("""
-<!DOCTYPE html>
+
+    stats = report_data.get("stats", [])
+    total_titles = sum(len(s["titles"]) for s in stats if s.get("count", 0) > 0)
+    total_categories = sum(1 for s in stats if s.get("count", 0) > 0)
+    now = get_utc_time()
+    date_str = now.strftime("%d %b %Y &middot; %H:%M")
+    mode_label = {"daily": "DAILY", "incremental": "DELTA", "current": "CURRENT"}.get(
+        mode, mode.upper()
+    )
+
+    html_parts = [
+        f"""<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@media only screen and (max-width: 620px) {{
+  .col-l, .col-r {{ display:block !important; width:100% !important;
+                    padding-left:0 !important; padding-right:0 !important; }}
+  .col-gap {{ display:none !important; }}
+  .outer {{ padding:8px !important; }}
+  .hdr {{ padding:16px 14px !important; }}
+  .content {{ padding:12px 12px 4px 12px !important; }}
+}}
+</style>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4; padding: 20px 0;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff;">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background-color: #1e3a8a; color: #ffffff; padding: 30px 20px; text-align: center;">
-                            <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: bold;">📊 TrendRadar</h1>
-                            <p style="margin: 0; font-size: 14px;">AI, Finance & Technology News</p>
-                        </td>
-                    </tr>
-    """)
-    
-    # Content section
-    html_parts.append("""
-                    <tr>
-                        <td style="padding: 20px; background-color: #ffffff;">
-    """)
-    
-    # Render news by category
-    for stat in report_data.get("stats", []):
-        word = html_escape(stat["word"])
-        count = stat["count"]
-        
-        # Category header
-        html_parts.append(f"""
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px; background-color: #f8f9fa; border-radius: 8px;">
-                                <tr>
-                                    <td style="padding: 15px; border-left: 4px solid #1e3a8a;">
-                                        <h2 style="margin: 0; font-size: 18px; color: #1e3a8a;">{word}</h2>
-                                        <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280;">{count} items</p>
-                                    </td>
-                                </tr>
-                            </table>
-        """)
-        
-        # Render news items
-        for idx, title_data in enumerate(stat["titles"], 1):
-            title = html_escape(title_data["title"])
-            source = html_escape(title_data["source_name"])
-            ranks = title_data.get("ranks", [])
-            url = title_data.get("url", "")
-            is_new = title_data.get("is_new", False)
-            
-            # Rank display
-            rank_text = ""
-            if ranks:
-                min_rank = min(ranks)
-                max_rank = max(ranks)
-                if min_rank == max_rank:
-                    rank_text = f"#{min_rank}"
-                else:
-                    rank_text = f"#{min_rank}-{max_rank}"
-            
-            # New badge
-            new_badge = "🆕 " if is_new else ""
-            
-            # Background color for new items
-            bg_color = "#fffbeb" if is_new else "#ffffff"
-            
-            # Make title clickable if URL exists
-            if url:
-                title_html = f'<a href="{html_escape(url)}" style="color: #1e3a8a; text-decoration: none; font-weight: 500;">{title}</a>'
-            else:
-                title_html = f'<span style="color: #333333; font-weight: 500;">{title}</span>'
-            
-            html_parts.append(f"""
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px; background-color: {bg_color}; border: 1px solid #e5e7eb; border-radius: 6px;">
-                                <tr>
-                                    <td style="padding: 12px 15px;">
-                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                            <tr>
-                                                <td style="width: 30px; vertical-align: top;">
-                                                    <span style="display: inline-block; background-color: #e5e7eb; color: #6b7280; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-align: center; min-width: 20px;">{idx}</span>
-                                                </td>
-                                                <td style="vertical-align: top;">
-                                                    <div style="margin-bottom: 6px;">
-                                                        <span style="background-color: #f3f4f6; color: #6b7280; font-size: 11px; padding: 3px 8px; border-radius: 4px; margin-right: 6px;">{source}</span>
-                                                        {f'<span style="background-color: #dc2626; color: #ffffff; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 4px; margin-right: 6px;">{rank_text}</span>' if rank_text else ''}
-                                                    </div>
-                                                    <div style="font-size: 14px; line-height: 1.5; color: #111827;">
-                                                        {new_badge}{title_html}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-            """)
-    
-    # Footer
-    html_parts.append("""
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                Generated by <strong>TrendRadar</strong> · 
-                                <a href="https://github.com/sansan0/TrendRadar" style="color: #1e3a8a; text-decoration: none;">GitHub Project</a>
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<body style="margin:0;padding:0;background-color:#f1f5f9;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center" class="outer" style="padding:24px 16px;">
+  <table cellpadding="0" cellspacing="0" border="0"
+    style="width:100%;max-width:800px;background-color:#ffffff;
+    border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+    <!-- Header -->
+    <tr>
+      <td class="hdr" style="background-color:#0f172a;padding:20px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td>
+            <div style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">
+              &#x1F4CA; TrendRadar</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">
+              AI, Finance &amp; Technology News</div>
+          </td>
+          <td align="right" style="vertical-align:middle;">
+            <span style="background-color:#1e293b;color:#e2e8f0;font-size:10px;
+              font-weight:700;padding:5px 10px;border-radius:20px;letter-spacing:0.5px;">
+              {mode_label}</span>
+          </td>
+        </tr></table>
+      </td>
+    </tr>
+
+    <!-- Stats bar -->
+    <tr>
+      <td style="background-color:#1e293b;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td align="center" style="padding:10px 16px;border-right:1px solid #334155;">
+            <div style="color:#94a3b8;font-size:9px;font-weight:700;
+              letter-spacing:0.8px;text-transform:uppercase;">ITEMS</div>
+            <div style="color:#f1f5f9;font-size:20px;font-weight:700;margin-top:1px;">
+              {total_titles}</div>
+          </td>
+          <td align="center" style="padding:10px 16px;border-right:1px solid #334155;">
+            <div style="color:#94a3b8;font-size:9px;font-weight:700;
+              letter-spacing:0.8px;text-transform:uppercase;">CATEGORIES</div>
+            <div style="color:#f1f5f9;font-size:20px;font-weight:700;margin-top:1px;">
+              {total_categories}</div>
+          </td>
+          <td align="center" style="padding:10px 16px;">
+            <div style="color:#94a3b8;font-size:9px;font-weight:700;
+              letter-spacing:0.8px;text-transform:uppercase;">GENERATED</div>
+            <div style="color:#f1f5f9;font-size:12px;font-weight:600;margin-top:3px;">
+              {date_str}</div>
+          </td>
+        </tr></table>
+      </td>
+    </tr>
+
+    <!-- Content -->
+    <tr>
+      <td class="content" style="padding:20px 20px 4px 20px;background-color:#f8fafc;">
+"""
+    ]
+
+    active_stats = [s for s in stats if s.get("count", 0) > 0]
+    for i in range(0, len(active_stats), 2):
+        left = active_stats[i]
+        right = active_stats[i + 1] if i + 1 < len(active_stats) else None
+
+        html_parts.append(
+            '<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr valign="top">'
+        )
+        html_parts.append(
+            '<td class="col-l" width="49%" style="vertical-align:top;padding-right:8px;">'
+        )
+        html_parts.append(_render_email_category_card(left))
+        html_parts.append("</td>")
+        html_parts.append(
+            '<td class="col-gap" width="2%" style="font-size:0;line-height:0;">&nbsp;</td>'
+        )
+        if right:
+            html_parts.append(
+                '<td class="col-r" width="49%" style="vertical-align:top;padding-left:8px;">'
+            )
+            html_parts.append(_render_email_category_card(right))
+            html_parts.append("</td>")
+        else:
+            html_parts.append('<td width="49%"></td>')
+        html_parts.append("</tr></table>")
+
+    html_parts.append(
+        """
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background-color:#0f172a;padding:14px 24px;text-align:center;">
+        <p style="margin:0;color:#64748b;font-size:11px;">
+          Generated by <strong style="color:#94a3b8;">TrendRadar</strong>
+          &nbsp;&middot;&nbsp;
+          <a href="https://github.com/sansan0/TrendRadar"
+            style="color:#6366f1;text-decoration:none;">GitHub</a>
+        </p>
+      </td>
+    </tr>
+
+  </table>
+</td></tr>
+</table>
 </body>
-</html>
-    """)
-    
+</html>"""
+    )
+
     return "".join(html_parts)
 
 
@@ -4140,6 +4233,7 @@ def send_to_email(
     custom_smtp_server: Optional[str] = None,
     custom_smtp_port: Optional[int] = None,
     report_data: Optional[Dict] = None,
+    mode: str = "daily",
 ) -> bool:
     """Send email notification"""
     try:
@@ -4150,9 +4244,8 @@ def send_to_email(
         print(f"Using HTML file: {html_file_path}")
         with open(html_file_path, "r", encoding="utf-8") as f:
             original_html = f.read()
-        
-        # Convert to Gmail-optimized HTML with inline styles
-        html_content = convert_to_gmail_html(original_html, report_data)
+
+        html_content = convert_to_gmail_html(original_html, report_data, mode)
 
         domain = from_email.split("@")[-1].lower()
 
