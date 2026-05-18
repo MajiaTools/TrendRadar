@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
 from email.utils import formataddr, formatdate, make_msgid
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Union
 
@@ -386,6 +386,36 @@ class PushRecordManager:
         except Exception as e:
             print(f"Failed to read push record: {e}")
             return False
+
+    def has_pushed_recently(self, cooldown_hours: int = 23) -> bool:
+        """Check if a push was recorded within cooldown_hours, spanning day boundaries"""
+        now = get_utc_time()
+        cutoff = now - timedelta(hours=cooldown_hours)
+
+        for days_back in range(2):
+            check_date = now - timedelta(days=days_back)
+            date_str = check_date.strftime("%Y%m%d")
+            record_file = self.record_dir / f"push_record_{date_str}.json"
+
+            if not record_file.exists():
+                continue
+
+            try:
+                with open(record_file, "r", encoding="utf-8") as f:
+                    record = json.load(f)
+                push_time_str = record.get("push_time", "")
+                if not push_time_str:
+                    continue
+                push_time = datetime.strptime(push_time_str, "%Y-%m-%d %H:%M:%S")
+                push_time = pytz.UTC.localize(push_time)
+                if push_time >= cutoff:
+                    hours_ago = (now - push_time).total_seconds() / 3600
+                    print(f"Recent push detected: {push_time_str} UTC ({hours_ago:.1f}h ago)")
+                    return True
+            except Exception as e:
+                print(f"Failed to read push record {record_file}: {e}")
+
+        return False
 
     def record_push(self, report_type: str):
         """Record push"""
@@ -3593,11 +3623,11 @@ def send_to_notifications(
             return results
 
         if CONFIG["PUSH_WINDOW"]["ONCE_PER_DAY"]:
-            if push_manager.has_pushed_today():
-                print(f"推送窗口控制：今天已推送过，跳过本times推送")
+            if push_manager.has_pushed_recently(cooldown_hours=23):
+                print(f"Push window: sent within last 23h, skipping to prevent cross-day duplicate")
                 return results
             else:
-                print(f"推送窗口控制：今天首times推送")
+                print(f"Push window: no push in last 23h, proceeding")
 
     report_data = prepare_report_data(stats, failed_ids, new_titles, id_to_name, mode)
 
@@ -4656,6 +4686,7 @@ class NewsAnalyzer:
 
     def _load_analysis_data(
         self,
+        precomputed_new_titles: Optional[Dict] = None,
     ) -> Optional[Tuple[Dict, Dict, Dict, Dict, List, List]]:
         """Unified data loading and preprocessing, filtering historical data using current monitored platform list"""
         try:
@@ -4677,7 +4708,10 @@ class NewsAnalyzer:
             total_titles = sum(len(titles) for titles in all_results.values())
             print(f"Read {total_titles} news items (filtered by current monitored platforms)")
 
-            new_titles = detect_latest_new_titles(current_platform_ids, self.dedup_manager)
+            if precomputed_new_titles is not None:
+                new_titles = precomputed_new_titles
+            else:
+                new_titles = detect_latest_new_titles(current_platform_ids, self.dedup_manager)
             word_groups, filter_words = load_frequency_words()
 
             return (
@@ -4803,15 +4837,22 @@ class NewsAnalyzer:
 
         return False
 
-    def _generate_summary_report(self, mode_strategy: Dict) -> Optional[str]:
+    def _generate_summary_report(self, mode_strategy: Dict, precomputed_new_titles: Optional[Dict] = None) -> Optional[str]:
         """Generate summary report (with notification)"""
         summary_type = (
             "当前榜单汇总" if mode_strategy["summary_mode"] == "current" else "Daily Summary"
         )
         print(f"生成{summary_type}报告...")
 
+        # For daily summaries, enforce a 23h cooldown independent of push window settings.
+        # This prevents duplicate emails when UTC midnight rolls over the calendar day.
+        summary_push_manager = PushRecordManager()
+        if mode_strategy["summary_mode"] == "daily" and summary_push_manager.has_pushed_recently(cooldown_hours=23):
+            print("Daily summary: last notification was sent within 23h — generating HTML only, skipping notification")
+            return self._generate_summary_html(mode_strategy["summary_mode"])
+
         # 加载分析数据
-        analysis_data = self._load_analysis_data()
+        analysis_data = self._load_analysis_data(precomputed_new_titles=precomputed_new_titles)
         if not analysis_data:
             return None
 
@@ -4833,8 +4874,8 @@ class NewsAnalyzer:
 
         print(f"{summary_type}报告已生成: {html_file}")
 
-        # 发送通知
-        self._send_notification_if_needed(
+        # 发送通知并记录推送时间（供23h冷却检查使用）
+        sent = self._send_notification_if_needed(
             stats,
             mode_strategy["summary_report_type"],
             mode_strategy["summary_mode"],
@@ -4843,6 +4884,8 @@ class NewsAnalyzer:
             id_to_name=id_to_name,
             html_file_path=html_file,
         )
+        if sent and mode_strategy["summary_mode"] == "daily":
+            summary_push_manager.record_push(mode_strategy["summary_report_type"])
 
         return html_file
 
@@ -4896,7 +4939,7 @@ class NewsAnalyzer:
         print(f"Report mode: {self.report_mode}")
         print(f"Operation mode: {mode_strategy['description']}")
 
-    def _crawl_data(self) -> Tuple[Dict, Dict, List]:
+    def _crawl_data(self) -> Tuple[Dict, Dict, List, str]:
         """Execute data crawling"""
         platforms = CONFIG["PLATFORMS"]
 
@@ -4913,17 +4956,17 @@ class NewsAnalyzer:
         title_file = save_titles_to_file(results, id_to_name, failed_ids)
         print(f"News saved to: {title_file}")
 
-        return results, id_to_name, failed_ids
+        return results, id_to_name, failed_ids, title_file
 
     def _execute_mode_strategy(
-        self, mode_strategy: Dict, results: Dict, id_to_name: Dict, failed_ids: List
+        self, mode_strategy: Dict, results: Dict, id_to_name: Dict, failed_ids: List, title_file: str
     ) -> Optional[str]:
         """Execute mode-specific logic"""
         # Get current monitored platform ID list
         current_platform_ids = [platform["id"] for platform in CONFIG["PLATFORMS"]]
 
         new_titles = detect_latest_new_titles(current_platform_ids, self.dedup_manager)
-        time_info = Path(save_titles_to_file(results, id_to_name, failed_ids)).stem
+        time_info = Path(title_file).stem
         word_groups, filter_words = load_frequency_words()
 
         # current模式下，实时推送需要使用完整的历史数据来保证统计信息的完整性
@@ -5010,8 +5053,8 @@ class NewsAnalyzer:
                     mode_strategy["summary_mode"]
                 )
             else:
-                # daily模式：直接生成汇总报告并发送通知
-                summary_html = self._generate_summary_report(mode_strategy)
+                # daily模式：直接生成汇总报告并发送通知，传入已计算的new_titles避免二次检测
+                summary_html = self._generate_summary_report(mode_strategy, precomputed_new_titles=new_titles)
 
         # 打开浏览器（仅在非容器环境）
         if self._should_open_browser() and html_file:
@@ -5038,9 +5081,9 @@ class NewsAnalyzer:
 
             mode_strategy = self._get_mode_strategy()
 
-            results, id_to_name, failed_ids = self._crawl_data()
+            results, id_to_name, failed_ids, title_file = self._crawl_data()
 
-            self._execute_mode_strategy(mode_strategy, results, id_to_name, failed_ids)
+            self._execute_mode_strategy(mode_strategy, results, id_to_name, failed_ids, title_file)
             
             # Save deduplication state
             if self.dedup_manager:
