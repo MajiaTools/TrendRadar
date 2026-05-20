@@ -1214,14 +1214,12 @@ def count_word_frequency(
 
     # Determine data source to process and new marking logic
     if mode == "incremental":
-        if is_first_today:
-            # Incremental mode + first crawl of the day: process all news, mark all as new
-            results_to_process = results
-            all_news_are_new = True
-        else:
-            # Incremental mode + not first crawl: only process new news
-            results_to_process = new_titles if new_titles else {}
-            all_news_are_new = True
+        # Always use dedup-filtered new_titles as the source of truth.
+        # The 72h dedup state already handles the "first run ever" case correctly
+        # (empty state means all items are new). Bypassing dedup on is_first_today
+        # caused identical midnight emails on consecutive days.
+        results_to_process = new_titles if new_titles else {}
+        all_news_are_new = True
     elif mode == "current":
         # Current mode: only process current batch news, but statistics come from all history
         if title_info:
@@ -1421,32 +1419,21 @@ def count_word_frequency(
 
     # Print summary information at the end
     if mode == "incremental":
-        if is_first_today:
-            total_input_news = sum(len(titles) for titles in results.values())
+        if new_titles:
+            total_new_count = sum(len(titles) for titles in new_titles.values())
             filter_status = (
                 "show all"
-                if len(word_groups) == 1 and word_groups[0]["group_key"] == "All News"
+                if len(word_groups) == 1
+                and word_groups[0]["group_key"] == "All News"
                 else "match frequency words"
             )
             print(
-                f"Incremental mode: First crawl of the day, {matched_new_count} out of {total_input_news} news {filter_status}"
+                f"Incremental mode: {matched_new_count} out of {total_new_count} new news {filter_status}"
             )
+            if matched_new_count == 0 and len(word_groups) > 1:
+                print("Incremental mode: No new news matches frequency words, notification will not be sent")
         else:
-            if new_titles:
-                total_new_count = sum(len(titles) for titles in new_titles.values())
-                filter_status = (
-                    "show all"
-                    if len(word_groups) == 1
-                    and word_groups[0]["group_key"] == "All News"
-                    else "match frequency words"
-                )
-                print(
-                    f"Incremental mode: {matched_new_count} out of {total_new_count} new news {filter_status}"
-                )
-                if matched_new_count == 0 and len(word_groups) > 1:
-                    print("Incremental mode: No new news matches frequency words, notification will not be sent")
-            else:
-                print("Incremental mode: No new news detected")
+            print("Incremental mode: No new news detected")
     elif mode == "current":
         total_input_news = sum(len(titles) for titles in results_to_process.values())
         if is_first_today:
