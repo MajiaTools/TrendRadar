@@ -136,6 +136,57 @@ platforms:
     api: "reddit"
     subreddit: "gamedev"
 
+  # Maker / app discovery (added 2026-11-07 per lynsea: maker/app subs all in)
+  # Activity verified via Arctic Shift, last 24h: IndieHackers 100, apps 68,
+  # iosapps 90, androidapps 30, AppIdeas 23, IMadeThis 100, SomebodyMakeThis 9,
+  # startups 21, IndieDev 100. Skipped: maker (3 posts, hardware DIY),
+  # AppDevelopment (0 posts), Entrepreneur (9 posts, mostly talk).
+
+  - id: "reddit-indiehackers"
+    name: "Reddit IndieHackers"
+    api: "reddit"
+    subreddit: "IndieHackers"
+
+  - id: "reddit-apps"
+    name: "Reddit Apps"
+    api: "reddit"
+    subreddit: "apps"
+
+  - id: "reddit-iosapps"
+    name: "Reddit iOS Apps"
+    api: "reddit"
+    subreddit: "iosapps"
+
+  - id: "reddit-androidapps"
+    name: "Reddit Android Apps"
+    api: "reddit"
+    subreddit: "androidapps"
+
+  - id: "reddit-appideas"
+    name: "Reddit AppIdeas"
+    api: "reddit"
+    subreddit: "AppIdeas"
+
+  - id: "reddit-imadethis"
+    name: "Reddit IMadeThis"
+    api: "reddit"
+    subreddit: "IMadeThis"
+
+  - id: "reddit-somebodymakethis"
+    name: "Reddit SomebodyMakeThis"
+    api: "reddit"
+    subreddit: "SomebodyMakeThis"
+
+  - id: "reddit-startups"
+    name: "Reddit Startups"
+    api: "reddit"
+    subreddit: "startups"
+
+  - id: "reddit-indiedev"
+    name: "Reddit IndieDev"
+    api: "reddit"
+    subreddit: "IndieDev"
+
   # Hacker News - Tech Trends (free, no key)
   - id: "hackernews"
     name: "Hacker News"
