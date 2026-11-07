@@ -1,180 +1,57 @@
-# DeepSeek (AI company)
-DeepSeek
-Liang Wenfeng
+# New product / maker posts (the discovery signal: someone built something new)
+I built
+I made
+Show
+launch
+launched
+just released
+new app
+new tool
+new game
+new website
+check out my
 
-# BYD (Electric vehicle company)
-BYD
-Wang Chuanfu
+# Game site intent (codes / wiki / guide)
+codes
+wiki
+guide
+tier list
+game
+gaming
+Roblox
+Steam
 
-# DJI (Drone company)
-DJI
+# Tool site intent (something calculable / generatable)
+generator
+calculator
+converter
+checker
+template
+tool
+website
+web app
+extension
 
-# ByteDance
-ByteDance
-Zhang Yiming
-
-# Tesla
-Tesla
-Elon Musk
-
-# Microsoft
-Microsoft
-
-# NVIDIA
-NVIDIA
-Jensen Huang
-
-# AMD
-AMD
-
-# Google
-Google
-Gemini
-DeepMind
-
-# OpenAI
-ChatGPT
-OpenAI
-Sora
-
-# Anthropic
-Claude
-Anthropic
-
-# Apple Products
-iPhone
-iPad
-Mac
-iOS
-
-# AI & Technology
+# AI site intent
 AI
-!gai
-Artificial Intelligence
-Machine Learning
-ML
-Deep Learning
-Neural Network
-LLM
-Large Language Model
-GPT
-Transformer
-Generative AI
-
-# AI Companies & Models
-OpenAI
-Anthropic
-Claude
 ChatGPT
-GPT-4
-GPT-5
-GPT
+Claude
 Gemini
-DeepMind
-Llama
-Mistral
-Stable Diffusion
+LLM
+AI tool
+AI video
+AI image
 Midjourney
+Stable Diffusion
 
-# Autonomous Driving
-Autonomous Driving
-Self-Driving
-Waymo
-Cruise
-FSD
-Full Self-Driving
+# Tutorial / how-to intent
+how to
+how-to
+tutorial
+explained
 
-# Robotics
-Robot
-Robotics
-Humanoid
-Boston Dynamics
-
-# National/Regional
-China
-Chinese
-Domestic
-
-# Countries
-USA
-United States
-Japan
-Korea
-South Korea
-
-# Semiconductors & Hardware
-Chip
-Semiconductor
-Lithography
-ASML
-TSMC
-Intel
-Qualcomm
-ARM
-GPU
-TPU
-Quantum Computing
-
-# Finance & Markets
-Stock Market
-Trading
-Investment
-Venture Capital
-VC
-IPO
-Crypto
-Cryptocurrency
-Bitcoin
-Ethereum
-Blockchain
-DeFi
-Fed
-Federal Reserve
-Interest Rate
-Inflation
-Recession
-Bull Market
-Bear Market
-S&P 500
-Nasdaq
-Dow Jones
-
-# Fintech
-Fintech
-PayPal
-Stripe
-Square
-Robinhood
-
-# Technology
-Technology
-Tech
-Innovation
-Startup
-Software
-Cloud
-SaaS
-API
-
-# Energy
-Nuclear
-Nuclear Energy
-
-# Infrastructure
-Hydropower
-Dam
-Yarlung Tsangpo River
-
-# Economic Terms
-New Quality Productivity
-Advanced Manufacturing
-
-# Space & Aerospace
-Moon
-Lunar
-Mars
-Space
-Universe
-Spacecraft
-Aerospace
-Aviation
+# Filter out (global excludes)
+!crypto
+!Bitcoin
+!stock market
+!giveaway
