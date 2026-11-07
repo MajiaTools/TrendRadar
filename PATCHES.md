@@ -8,9 +8,12 @@ Applied 2026-11-07 for lynsea's X/Reddit breakout-term monitoring.
    (GitHub Actions + this VM return "whoa there, pardner!" / IncompleteRead, 0 items).
    Arctic Shift verified 2026-11-07: ~2 min ingestion lag, real scores.
    Fetches last 24h (limit 100), ranks locally by score, keeps top 50.
-2. `config/config.yaml` — platforms replaced with 8 Reddit subs (SideProject,
-   InternetIsBeautiful, webdev, SaaS, selfhosted, artificial, LocalLLaMA, gamedev)
-   + Hacker News. All NewsAPI sources removed (no key, not needed).
+2. `config/config.yaml` — platforms replaced with Reddit subs + Hacker News.
+   All NewsAPI sources removed (no key, not needed). Subs (17): SideProject,
+   InternetIsBeautiful, webdev, SaaS, selfhosted, artificial, LocalLLaMA, gamedev,
+   IndieHackers, apps, iosapps, androidapps, AppIdeas, IMadeThis, SomebodyMakeThis,
+   startups, IndieDev. Maker/app subs added 2026-11-07 per lynsea, activity verified
+   via Arctic Shift (24h counts in config comments).
 3. `config/frequency_words.txt` — replaced news/company watchlist with site-fit
    discovery groups (maker posts / game codes-wiki-guide / tool generator-calculator /
    AI / tutorial), plus crypto/stock/giveaway excludes.
