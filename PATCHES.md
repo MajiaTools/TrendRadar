@@ -14,5 +14,7 @@ Applied 2026-11-07 for lynsea's X/Reddit breakout-term monitoring.
 3. `config/frequency_words.txt` — replaced news/company watchlist with site-fit
    discovery groups (maker posts / game codes-wiki-guide / tool generator-calculator /
    AI / tutorial), plus crypto/stock/giveaway excludes.
-4. `.github/workflows/crawler.yml` — dropped NEWSAPI_KEY env (unused now).
-   Schedule unchanged: every 4 hours, commits output back to the repo.
+4. `.github/workflows/crawler.yml` — NOT changed: the GitHub App cannot update workflow
+   files (403, missing workflows permission), so the unused NEWSAPI_KEY env line stays.
+   Harmless: no newsapi sources remain, the variable is never read. Schedule unchanged:
+   every 4 hours, commits output back to the repo.
