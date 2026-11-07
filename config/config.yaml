@@ -91,131 +91,55 @@ weight:
 #   - Additional fields based on API type
 
 platforms:
-  # ===== FREE ENGLISH SOURCES (No API key needed) =====
+  # ===== Reddit via Arctic Shift (free, no key; patched adapter) =====
+  # Subreddits picked for independent-site discovery: new products, web tools,
+  # dev tools, SaaS, self-hosted tools, AI, game dev. Game-discovery subs are
+  # intentionally NOT duplicated here (Roblox/Steam already covered by sentinels).
 
-  # Reddit - Various Communities
-  - id: "reddit-worldnews"
-    name: "Reddit World News"
+  - id: "reddit-sideproject"
+    name: "Reddit SideProject"
     api: "reddit"
-    subreddit: "worldnews"
+    subreddit: "SideProject"
 
-  - id: "reddit-news"
-    name: "Reddit News"
+  - id: "reddit-internetisbeautiful"
+    name: "Reddit InternetIsBeautiful"
     api: "reddit"
-    subreddit: "news"
+    subreddit: "InternetIsBeautiful"
 
-  # - id: "reddit-technology"
-  #   name: "Reddit Technology"
-  #   api: "reddit"
-  #   subreddit: "technology"
-
-  # - id: "reddit-programming"
-  #   name: "Reddit Programming"
-  #   api: "reddit"
-  #   subreddit: "programming"
-
-  # - id: "reddit-science"
-  #   name: "Reddit Science"
-  #   api: "reddit"
-  #   subreddit: "science"
-
-  # AI & Machine Learning
-  # - id: "reddit-artificial"
-  #   name: "Reddit AI"
-  #   api: "reddit"
-  #   subreddit: "artificial"
-
-  # - id: "reddit-machinelearning"
-  #   name: "Reddit Machine Learning"
-  #   api: "reddit"
-  #   subreddit: "MachineLearning"
-
-  # - id: "reddit-localllama"
-  #   name: "Reddit Local LLMs"
-  #   api: "reddit"
-  #   subreddit: "LocalLLaMA"
-
-  # Finance & Investing
-  - id: "reddit-finance"
-    name: "Reddit Finance"
+  - id: "reddit-webdev"
+    name: "Reddit WebDev"
     api: "reddit"
-    subreddit: "finance"
+    subreddit: "webdev"
 
-  - id: "reddit-investing"
-    name: "Reddit Investing"
+  - id: "reddit-saas"
+    name: "Reddit SaaS"
     api: "reddit"
-    subreddit: "investing"
+    subreddit: "SaaS"
 
-  # - id: "reddit-stocks"
-  #   name: "Reddit Stocks"
-  #   api: "reddit"
-  #   subreddit: "stocks"
-
-  - id: "reddit-wallstreetbets"
-    name: "Reddit WallStreetBets"
+  - id: "reddit-selfhosted"
+    name: "Reddit SelfHosted"
     api: "reddit"
-    subreddit: "wallstreetbets"
+    subreddit: "selfhosted"
 
-  # Hacker News - Tech Trends
+  - id: "reddit-artificial"
+    name: "Reddit AI"
+    api: "reddit"
+    subreddit: "artificial"
+
+  - id: "reddit-localllama"
+    name: "Reddit LocalLLaMA"
+    api: "reddit"
+    subreddit: "LocalLLaMA"
+
+  - id: "reddit-gamedev"
+    name: "Reddit GameDev"
+    api: "reddit"
+    subreddit: "gamedev"
+
+  # Hacker News - Tech Trends (free, no key)
   - id: "hackernews"
     name: "Hacker News"
     api: "hackernews"
-
-  # ===== NEWS API SOURCES (Active - requires NEWSAPI_KEY in GitHub Secrets) =====
-  # Get free key at: https://newsapi.org (100 requests/day free)
-
-  # Technology News - AI & Innovation
-  - id: "techcrunch"
-    name: "TechCrunch"
-    api: "newsapi"
-    source_id: "techcrunch"
-
-  - id: "the-verge"
-    name: "The Verge"
-    api: "newsapi"
-    source_id: "the-verge"
-
-  - id: "wired"
-    name: "Wired"
-    api: "newsapi"
-    source_id: "wired"
-
-  - id: "ars-technica"
-    name: "Ars Technica"
-    api: "newsapi"
-    source_id: "ars-technica"
-
-  - id: "the-next-web"
-    name: "The Next Web"
-    api: "newsapi"
-    source_id: "the-next-web"
-
-  # Business & Finance News
-  - id: "bloomberg"
-    name: "Bloomberg"
-    api: "newsapi"
-    source_id: "bloomberg"
-
-  - id: "business-insider"
-    name: "Business Insider"
-    api: "newsapi"
-    source_id: "business-insider"
-
-  - id: "fortune"
-    name: "Fortune"
-    api: "newsapi"
-    source_id: "fortune"
-
-  - id: "the-wall-street-journal"
-    name: "Wall Street Journal"
-    api: "newsapi"
-    source_id: "the-wall-street-journal"
-
-  # General News (High Quality)
-  - id: "reuters"
-    name: "Reuters"
-    api: "newsapi"
-    source_id: "reuters"
 
   # Additional Sources (Commented - uncomment if needed, watch your 100 req/day limit)
   # - id: "engadget"
