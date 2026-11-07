@@ -55,86 +55,82 @@ class EnglishPlatformsAdapter:
 
     def fetch_from_reddit(self, subreddit: str) -> Dict:
         """
-        Fetch trending posts from Reddit using the JSON API (unauthenticated)
-        
-        Args:
-            subreddit: Subreddit name (e.g., 'worldnews', 'technology')
-        
-        Returns:
-            Dict with format: {'id': str, 'name': str, 'items': List[Dict]}
+        Fetch trending posts from Reddit via Arctic Shift (free archive API, no auth).
+
+        Why not reddit.com directly: reddit.com/hot.json blocks server/datacenter IPs
+        ("whoa there, pardner!" / IncompleteRead) from this VM and from GitHub Actions,
+        so the original direct-JSON fetch returns 0 items. Arctic Shift
+        (https://arctic-shift.photon-reddit.com) mirrors Reddit posts with ~2 min lag
+        and works from server IPs. Verified 2026-11-07: r/gaming 24h window returns
+        real scores (max 13284); r/SideProject 7-day window max 86.
+
+        Strategy: pull the last 24h (newest first, limit 100), then rank locally by
+        score and keep the top 50. Scores on fresh low-volume posts are still 1, so
+        discovery value comes from the titles themselves, not the ranking.
         """
-        # Use the JSON endpoint which provides more metadata than RSS
-        url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=50"
-        
-        # Headers are crucial for Reddit to avoid 429s
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'application/json'
+        import time as _time
+
+        now = int(_time.time())
+        url = "https://arctic-shift.photon-reddit.com/api/posts/search"
+        params = {
+            "subreddit": subreddit,
+            "sort": "desc",          # newest first; we re-rank by score locally
+            "limit": 100,
+            "after": now - 24 * 3600,
         }
+        headers = {"User-Agent": "MajiaTools-TrendRadar/1.0 (Arctic Shift Reddit mirror)"}
 
         try:
-            response = requests.get(
-                url,
-                headers=headers,
-                proxies=self.proxies,
-                timeout=15
-            )
-            
-            # Handle specific Reddit errors
-            if response.status_code == 429:
-                print(f"Rate limited by Reddit for r/{subreddit}. Waiting and retrying...")
-                time.sleep(5)
-                response = requests.get(url, headers=headers, proxies=self.proxies, timeout=15)
-            
+            response = requests.get(url, params=params, headers=headers,
+                                    proxies=self.proxies, timeout=30)
             response.raise_for_status()
-            data = response.json()
-            
-            print(f"✓ Using Reddit JSON API for r/{subreddit} (with scores & comments)")
-            
-            items = []
-            if 'data' in data and 'children' in data['data']:
-                for idx, child in enumerate(data['data']['children'], 1):
-                    post = child['data']
-                    
-                    # Skip stickied posts
-                    if post.get('stickied', False):
-                        continue
-                        
-                    items.append({
-                        'rank': idx,
-                        'title': post.get('title', ''),
-                        'url': post.get('url', ''),
-                        'mobileUrl': post.get('url', ''),
-                        'score': post.get('score', 0),
-                        'comments': post.get('num_comments', 0),
-                        'created': post.get('created_utc', 0),
-                        'author': post.get('author', 'unknown'),
-                        'is_video': post.get('is_video', False),
-                        'is_self': post.get('is_self', False)
-                    })
-                    
-                    if len(items) >= 50:
-                        break
-                
-                # Log sample data to verify scores are being fetched
-                if items:
-                    sample = items[0]
-                    print(f"  Sample post: score={sample['score']}, comments={sample['comments']}")
+            posts = response.json().get("data", [])
+            print(f"  Arctic Shift r/{subreddit}: {len(posts)} posts in last 24h")
 
+            items = []
+            for post in posts:
+                if post.get("stickied"):
+                    continue
+                if post.get("removed_by") is not None:
+                    continue
+                title = (post.get("title") or "").strip()
+                if not title:
+                    continue
+                permalink = post.get("permalink") or ""
+                link = f"https://www.reddit.com{permalink}" if permalink else (post.get("url") or "")
+                items.append({
+                    "rank": 0,  # set after sorting by score
+                    "title": title,
+                    "url": link,
+                    "mobileUrl": link,
+                    "score": post.get("score", 0) or 0,
+                    "comments": post.get("num_comments", 0) or 0,
+                    "created": post.get("created_utc", 0) or 0,
+                    "author": post.get("author", "unknown"),
+                    "is_video": bool(post.get("is_video", False)),
+                    "is_self": bool(post.get("is_self", False)),
+                })
+
+            items.sort(key=lambda x: x["score"], reverse=True)
+            items = items[:50]
+            for idx, it in enumerate(items, 1):
+                it["rank"] = idx
+
+            if items:
+                print(f"  Top r/{subreddit}: score={items[0]['score']}, comments={items[0]['comments']}")
             return {
-                'id': f"reddit-{subreddit}",
-                'name': f"Reddit r/{subreddit}",
-                'items': items
+                "id": f"reddit-{subreddit}",
+                "name": f"Reddit r/{subreddit}",
+                "items": items,
             }
 
         except Exception as e:
-            print(f"Error fetching from Reddit r/{subreddit}: {e}")
-            # Fallback to empty list or basic error handling
+            print(f"Error fetching from Reddit r/{subreddit} via Arctic Shift: {e}")
             return {
-                'id': f"reddit-{subreddit}",
-                'name': f"Reddit r/{subreddit}",
-                'items': [],
-                'error': str(e)
+                "id": f"reddit-{subreddit}",
+                "name": f"Reddit r/{subreddit}",
+                "items": [],
+                "error": str(e),
             }
 
     def fetch_from_hackernews(self) -> Dict:
