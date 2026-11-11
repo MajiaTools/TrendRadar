@@ -1,0 +1,3005 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TrendRadar - AI, Finance & Technology News</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #1a202c;
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .container {
+                max-width: 680px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .header {
+                background: linear-gradient(135deg, #1e3a8a 0%, #5b21b6 50%, #7e22ce 100%);
+                color: white;
+                padding: 40px 32px;
+                text-align: center;
+                position: relative;
+                border-bottom: 4px solid #fbbf24;
+            }
+
+            .header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b);
+            }
+            
+            .save-buttons {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                display: flex;
+                gap: 8px;
+            }
+            
+            .save-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                backdrop-filter: blur(10px);
+                white-space: nowrap;
+            }
+            
+            .save-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-1px);
+            }
+            
+            .save-btn:active {
+                transform: translateY(0);
+            }
+            
+            .save-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+            
+            .logo {
+                font-size: 48px;
+                margin-bottom: 12px;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            }
+
+            .header-title {
+                font-size: 32px;
+                font-weight: 800;
+                margin: 0 0 8px 0;
+                letter-spacing: -1px;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .header-subtitle {
+                font-size: 15px;
+                opacity: 0.95;
+                margin: 0 0 28px 0;
+                font-weight: 400;
+                letter-spacing: 0.3px;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin-top: 24px;
+            }
+
+            .stat-card {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border-radius: 12px;
+                padding: 16px 12px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: transform 0.2s ease, background 0.2s ease;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-2px);
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .stat-label {
+                display: block;
+                font-size: 11px;
+                opacity: 0.85;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: 600;
+            }
+
+            .stat-value {
+                font-weight: 700;
+                font-size: 20px;
+                line-height: 1;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+            
+            .content {
+                padding: 32px 28px;
+                background: #fafbfc;
+            }
+
+            .word-group {
+                margin-bottom: 36px;
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+                border: 1px solid #e5e7eb;
+            }
+
+            .word-group:first-child {
+                margin-top: 0;
+            }
+
+            .word-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+                border-bottom: 2px solid #f3f4f6;
+            }
+
+            .word-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .word-name {
+                font-size: 20px;
+                font-weight: 700;
+                color: #111827;
+                letter-spacing: -0.3px;
+            }
+
+            .word-count {
+                background: #f3f4f6;
+                color: #6b7280;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 12px;
+                border-radius: 12px;
+            }
+
+            .word-count.hot {
+                background: #fee2e2;
+                color: #dc2626;
+                font-weight: 700;
+            }
+
+            .word-count.warm {
+                background: #ffedd5;
+                color: #ea580c;
+                font-weight: 700;
+            }
+            
+            .word-index {
+                background: #f9fafb;
+                color: #9ca3af;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 4px 10px;
+                border-radius: 8px;
+            }
+
+            .news-item {
+                margin-bottom: 16px;
+                padding: 18px;
+                background: #fafbfc;
+                border-radius: 10px;
+                position: relative;
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+                border: 1px solid #f3f4f6;
+                transition: all 0.2s ease;
+            }
+
+            .news-item:hover {
+                background: #f9fafb;
+                border-color: #e5e7eb;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            }
+
+            .news-item:last-child {
+                margin-bottom: 0;
+            }
+
+            .news-item.new {
+                border-left: 3px solid #fbbf24;
+                background: #fffbeb;
+            }
+
+            .news-item.new::after {
+                content: "NEW";
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                background: #fbbf24;
+                color: #92400e;
+                font-size: 9px;
+                font-weight: 800;
+                padding: 4px 8px;
+                border-radius: 6px;
+                letter-spacing: 0.5px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+            
+            .news-number {
+                color: #6b7280;
+                font-size: 14px;
+                font-weight: 700;
+                min-width: 28px;
+                text-align: center;
+                flex-shrink: 0;
+                background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+                border-radius: 8px;
+                width: 28px;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 2px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+
+            .news-content {
+                flex: 1;
+                min-width: 0;
+                padding-right: 50px;
+            }
+
+            .news-item.new .news-content {
+                padding-right: 60px;
+            }
+
+            .news-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 10px;
+                flex-wrap: wrap;
+            }
+
+            .source-name {
+                color: #6b7280;
+                font-size: 12px;
+                font-weight: 600;
+                background: #f3f4f6;
+                padding: 3px 10px;
+                border-radius: 6px;
+            }
+
+            .rank-num {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 6px;
+                min-width: 22px;
+                text-align: center;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+
+            .rank-num.top {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            }
+
+            .rank-num.high {
+                background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            }
+            
+            .time-info {
+                color: #999;
+                font-size: 11px;
+            }
+            
+            .count-info {
+                color: #059669;
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+            .category-tag {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .category-ai {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .category-finance {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .category-tech {
+                background: #fce7f3;
+                color: #9f1239;
+            }
+
+            .category-crypto {
+                background: #fef3c7;
+                color: #92400e;
+            }
+            
+            .news-title {
+                font-size: 15px;
+                line-height: 1.5;
+                color: #111827;
+                margin: 0;
+                font-weight: 500;
+            }
+
+            .news-link {
+                color: #2563eb;
+                text-decoration: none;
+                transition: color 0.2s ease;
+                font-weight: 500;
+            }
+
+            .news-link:hover {
+                color: #1d4ed8;
+                text-decoration: underline;
+            }
+
+            .news-link:visited {
+                color: #7c3aed;
+            }
+            
+            .new-section {
+                margin-top: 40px;
+                padding-top: 24px;
+                border-top: 2px solid #f0f0f0;
+            }
+            
+            .new-section-title {
+                color: #1a1a1a;
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 20px 0;
+            }
+            
+            .new-source-group {
+                margin-bottom: 24px;
+            }
+            
+            .new-source-title {
+                color: #666;
+                font-size: 13px;
+                font-weight: 500;
+                margin: 0 0 12px 0;
+                padding-bottom: 6px;
+                border-bottom: 1px solid #f5f5f5;
+            }
+            
+            .new-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 8px 0;
+                border-bottom: 1px solid #f9f9f9;
+            }
+            
+            .new-item:last-child {
+                border-bottom: none;
+            }
+            
+            .new-item-number {
+                color: #999;
+                font-size: 12px;
+                font-weight: 600;
+                min-width: 18px;
+                text-align: center;
+                flex-shrink: 0;
+                background: #f8f9fa;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .new-item-rank {
+                color: #fff;
+                background: #6b7280;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 6px;
+                border-radius: 8px;
+                min-width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .new-item-rank.top { background: #dc2626; }
+            .new-item-rank.high { background: #ea580c; }
+            
+            .new-item-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .new-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .error-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            
+            .error-title {
+                color: #dc2626;
+                font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+            }
+            
+            .error-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .error-item {
+                color: #991b1b;
+                font-size: 13px;
+                padding: 2px 0;
+                font-family: 'SF Mono', Consolas, monospace;
+            }
+            
+            .footer {
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+                color: white;
+                padding: 28px 32px;
+                text-align: center;
+                border-top: 3px solid #fbbf24;
+            }
+
+            .footer-content {
+                font-size: 13px;
+                line-height: 1.8;
+                opacity: 0.9;
+            }
+
+            .footer-link {
+                color: #fbbf24;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+
+            .footer-link:hover {
+                color: #fcd34d;
+                text-decoration: underline;
+            }
+
+            .project-name {
+                font-weight: 700;
+                color: white;
+                font-size: 14px;
+            }
+
+            .footer-tagline {
+                margin-top: 8px;
+                font-size: 12px;
+                opacity: 0.7;
+            }
+            
+            @media (max-width: 680px) {
+                body { padding: 12px; }
+                .container { border-radius: 12px; }
+                .header { padding: 32px 24px; }
+                .content { padding: 24px 20px; }
+                .footer { padding: 24px 20px; }
+                .logo { font-size: 40px; }
+                .header-title { font-size: 26px; }
+                .header-subtitle { font-size: 14px; }
+                .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+                .stat-card { padding: 14px 10px; }
+                .stat-value { font-size: 18px; }
+                .word-group { padding: 20px; margin-bottom: 24px; }
+                .word-name { font-size: 18px; }
+                .news-item { padding: 14px; gap: 10px; }
+                .news-header { gap: 6px; }
+                .news-content { padding-right: 45px; }
+                .news-number { width: 24px; height: 24px; font-size: 12px; }
+                .new-item { gap: 8px; }
+                .save-buttons {
+                    position: static;
+                    margin-bottom: 16px;
+                    display: flex;
+                    gap: 8px;
+                    justify-content: center;
+                    flex-direction: column;
+                    width: 100%;
+                }
+                .save-btn { width: 100%; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="save-buttons">
+                    <button class="save-btn" onclick="saveAsImage()">Save as Image</button>
+                    <button class="save-btn" onclick="saveAsMultipleImages()">Save in Segments</button>
+                </div>
+                <div class="logo">📊</div>
+                <div class="header-title">TrendRadar</div>
+                <div class="header-subtitle">AI, Finance & Technology News Analysis</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Mode</span>
+                        <span class="stat-value">Live</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">328</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Trending</span>
+                        <span class="stat-value">203</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Time</span>
+                        <span class="stat-value">11:33</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="error-section">
+                    <div class="error-title">⚠️ Failed Platforms</div>
+                    <ul class="error-list"><li class="error-item">reddit-localllama</li><li class="error-item">reddit-indiehackers</li><li class="error-item">reddit-iosapps</li><li class="error-item">reddit-androidapps</li><li class="error-item">reddit-appideas</li>
+                    </ul>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name"># New product / maker posts (the discovery signal: someone built something new) I built I made Show launch launched just released new app new tool new game new website check out my</div>
+                            <div class="word-count hot">95 items</div>
+                        </div>
+                        <div class="word-index">1/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num top">1</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfgby/i_built_a_free_chrome_extension_that_wipes_any/" target="_blank" class="news-link">I built a free Chrome extension that wipes any live webpage to a blank canvas and deploys multiplayer Figma-style cursors to rebuild it in real time (with Web Audio + 60 FPS video export)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt4ldv/i_made_the_first_ai_video_editing_app_for_macos/" target="_blank" class="news-link">I made the First AI Video Editing app for macOS</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xt506u/i_made_a_calm_toy_box_app_for_toddlers_every/" target="_blank" class="news-link">I made a calm toy box app for toddlers, every drawing and sound in it is generated by code</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num top">3</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xt3kla/i_made_an_android_app_that_rescales_a_recipe_when/" target="_blank" class="news-link">I made an Android app that rescales a recipe when the headcount changes and builds one shopping list</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num high">4</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfdd9/i_built_a_tool_that_lets_you_share_one_row_of_a/" target="_blank" class="news-link">I built a tool that lets you share one row of a spreadsheet instead of the whole file</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num high">5</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfd87/i_built_a_tool_to_check_payment_processor_fit/" target="_blank" class="news-link">I built a tool to check payment processor fit before integrating</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num high">5</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt7s0g/i_built_a_free_shared_expense_tracker_expenmo/" target="_blank" class="news-link">I Built a Free Shared Expense Tracker - Expenmo</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfcn8/i_built_five_free_finance_calculators_compound/" target="_blank" class="news-link">I built five free finance calculators (compound interest, FIRE, Coast FIRE, savings goal, loan) and I&#x27;d love your feedback</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtdfgo/showoff_saturday_project_how_i_built_a/" target="_blank" class="news-link">Showoff Saturday / Project: How I built a lightweight, native PHP &amp; JS music streaming platform without heavy frameworks</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt1d6t/i_made_a_free_iphone_toolkit_with_10_usefult/" target="_blank" class="news-link">I made a free iPhone toolkit with 10 usefult tools. No ads, no account, no tracking.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xterzt/i_got_tired_of_hunting_for_pdfs_in_whatsapp/" target="_blank" class="news-link">I got tired of hunting for PDFs in WhatsApp folders, so I built my own document reader</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">7</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtdciq/i_built_we_browser_a_privacyfirst_web_browser/" target="_blank" class="news-link">I built &quot;WE BROWSER&quot; — a privacy-first web browser &amp; search interface featuring zero-referrer proxying, multi-engine results, and local Ollama AI integration.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">7</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xteqik/i_built_an_alternative_to_google_forms_because_i/" target="_blank" class="news-link">I built an alternative to Google Forms because I wanted more control over how forms are created</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">8</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xteq99/i_made_the_1_ai_video_editing_for_macos_and_a/" target="_blank" class="news-link">I made the #1 AI Video Editing for MacOS and a free Screenshot tool as well</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">8</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xt8cd4/i_built_steampunk_a_swipe_feed_for_discovering/" target="_blank" class="news-link">I built SteamPunk, a swipe feed for discovering Steam games</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">16</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">9</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf8gw/i_built_a_free_tool_that_compares_150_ai_saas/" target="_blank" class="news-link">I built a free tool that compares 150+ AI &amp; SaaS tools with published pricing &amp; workflows (no signup, zero DB). We&#x27;re live on Product Hunt today!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">17</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">9</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xssvlw/is_learn_to_think_the_new_learn_to_code_pwc/" target="_blank" class="news-link">Is &#x27;Learn to Think&#x27; the new &#x27;Learn to Code&#x27;? PwC launches $100 million critical thinking education push as AI threatens consulting revenue and quality</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">18</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">9</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xteibn/i_built_a_visualizer_for_the_sardinaspatterson/" target="_blank" class="news-link">I built a visualizer for the Sardinas-Patterson algorithm (Information Theory)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">19</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">10</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtbx0c/video_editors_i_built_a_portfolio_site_for_you/" target="_blank" class="news-link">Video editors: I built a portfolio site for you.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">20</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">10</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtegdc/i_built_an_app_that_analyzes_your_relationship/" target="_blank" class="news-link">I built an app that analyzes your relationship patterns</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">21</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">11</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf6w1/i_built_a_free_hotel_management_system_that_runs/" target="_blank" class="news-link">I built a free hotel management system that runs with no internet and no mouse (50-sec demo)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">22</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">11</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xte6q0/i_built_a_100_local_screen_mirroring_cctv_app/" target="_blank" class="news-link">I Built a 100% Local Screen Mirroring &amp; CCTV App (Zero Cloud/Server) – Looking for Ideas!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">23</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">11</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtfgmh/the_hidden_lot_launch_trailer_real_gameplay_bid/" target="_blank" class="news-link">The Hidden Lot – launch trailer (real gameplay). Bid on sealed storage lockers, tear them apart, find out what you really bought</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">24</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">12</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtbun4/i_built_a_100_clientside_open_graph_8platform/" target="_blank" class="news-link">I built a 100% client-side Open Graph + 8-platform social preview debugger (no login, zero server uploads)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">25</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt55t4/steam_build_approval_stuck_in_queue_1_day_before/" target="_blank" class="news-link">Steam build approval stuck in queue 1 day before launch... can I delay the release date?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">26</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdu0b/karo_launcher_tiles_widgets/" target="_blank" class="news-link">Karo Launcher: Tiles &amp; Widgets</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">27</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdolm/im_a_literature_student_and_i_built_my_first_app/" target="_blank" class="news-link">I’m a literature student and I built my first app: A Philosophical Text Analyzer</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">28</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtfa31/i_didnt_make_a_game_but_i_made_a_budget_app_with/" target="_blank" class="news-link">I didn’t make a game, but I made a budget app with streaks and a squirrel mascot. Would love feedback from people who design for fun.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">29</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf2tm/allinone_file_tools_i_built_an_android_app_to/" target="_blank" class="news-link">All-in-One File Tools – I built an Android app to simplify everyday file operations</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">30</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xt7mq7/i_built_an_opensource_privacyfirst_web_tech/" target="_blank" class="news-link">I built an open-source, privacy-first web tech analyzer (StackLens) because I got tired of paywalled alternatives.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">31</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xte1n7/hi_all_solo_developer_here_i_just_released/" target="_blank" class="news-link">Hi all, solo developer here. I just released TimeMaps, and I’d love your feedback.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">32</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">16</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf1fl/i_made_a_saas_dashboard_ui_kit_in_figma_light/" target="_blank" class="news-link">I made a SaaS dashboard UI kit in Figma (light + dark, loading/empty/failed payment states) — looking for feedback</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">33</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">16</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xtdpnr/karo_launcher_tiles_widgets/" target="_blank" class="news-link">Karo Launcher: Tiles &amp; Widgets</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">34</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">16</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdimq/i_made_migoo_an_ai_workspace_for_product_design/" target="_blank" class="news-link">I made Migoo, an AI workspace for product design and e-commerce images</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">35</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">18</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt21za/i_built_a_c_networking_library_for_multiplayer/" target="_blank" class="news-link">I built a C++ networking library for multiplayer games using GameNetworkingSockets.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">36</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">18</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt9yq8/i_built_a_free_pet_management_app_for_australian/" target="_blank" class="news-link">I built a free pet management app for Australian pet owners — health records, reminders, ID cards &amp; more 🐾</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">37</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">18</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdg8a/i_made_a_party_game_where_knowing_your_friends/" target="_blank" class="news-link">I made a party game where knowing your friends beats knowing the answers</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">38</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">19</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt96df/i_made_a_40second_motion_graphics_ad_without/" target="_blank" class="news-link">I made a 40-second motion graphics ad without opening a video editor. I only said three things: &quot;weak&quot;, &quot;too loud&quot;, &quot;again&quot;</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">39</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">19</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtddos/i_built_a_weekly_house_chart_you_can_play/" target="_blank" class="news-link">I built a weekly house chart you can play straight through</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">40</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">19</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtf177/remember_sandstorm_pirate_wars_im_a_solo/" target="_blank" class="news-link">Remember Sandstorm: Pirate Wars? I&#x27;m a solo developer from Ukraine creating a new game inspired by it — SANDSTORM: FIRE &amp; STEEL</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">41</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">20</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdcip/i_made_a_browserbased_pdf_editor_with_local/" target="_blank" class="news-link">I made a browser-based PDF editor with local processing for many tools</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">42</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">21</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdc6d/i_built_a_uk_food_diary_with_free_tracking_and_an/" target="_blank" class="news-link">I built a UK food diary with free tracking and an affordable upgrade. I’d love some feedback.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">43</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">21</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtevaa/i_made_a_browser_game_called_flip_the_rule_its/" target="_blank" class="news-link">I made a browser game called Flip The Rule. It&#x27;s now live on CrazyGames!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">44</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Hacker News</span><span class="rank-num ">21</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://github.com/adrbn/bo2-mac" target="_blank" class="news-link">Show HN: Black Ops II statically recompiled to native ARM64 macOS</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">45</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">22</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteqb6/i_built_an_app_because_i_was_sick_of_losing_pdfs/" target="_blank" class="news-link">I built an app because I was sick of losing PDFs inside WhatsApp and Telegram folders</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">46</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">22</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt3pj6/mealself_after_many_prompts_and_long_hours_my/" target="_blank" class="news-link">MealSelf - After many prompts and long hours, my first app is launched!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">47</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">22</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtdbc7/i_made_a_price_comparison_site_for_car_parts_us/" target="_blank" class="news-link">I made a price comparison site for car parts (US, Canada, UK, Australia)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">48</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">23</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtepbq/take_your_data_back_my_mum_was_getting_scam_calls/" target="_blank" class="news-link">Take Your Data Back - My mum was getting scam calls every week and I get cold calls constantly, so I built a UK tool to get our details off the lists they buy</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">49</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">23</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtd883/i_built_an_android_weather_app_that_helps_plan/" target="_blank" class="news-link">I built an Android weather app that helps plan outdoor activities</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">50</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">24</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtep9g/i_built_a_web_tool_that_converts_long_youtube/" target="_blank" class="news-link">I built a web tool that converts long YouTube lectures into 1-click downloadable Anki decks (with LaTeX math &amp; zero timeouts)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">51</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">24</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtf31l/i_built_a_quotetocash_tool_for_businesses_first/" target="_blank" class="news-link">I built a quote-to-cash tool for businesses. First 10get 90 days free in exchange for honest feedback.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">52</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">24</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xt34x2/my_phone_made_my_time_blindness_worse_so_i_built/" target="_blank" class="news-link">My phone made my time blindness worse, so I built an app to fix it</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">53</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtd6p5/i_built_soundtag_dynamic_qr_codes_with_native/" target="_blank" class="news-link">I built SoundTag: Dynamic QR codes with native Spotify deep-linking &amp; zero reprinting for merch, packaging, and creators</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">54</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">26</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtepek/not_a_promotion_i_built_a_linkedin_content_app/" target="_blank" class="news-link">Not a promotion: I built a LinkedIn content app. With AI doing more of the work, what would make something like this worth paying for?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">55</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">26</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xteugh/show_and_tell_serverless_realtime_multiplayer/" target="_blank" class="news-link">Show and tell: serverless real-time multiplayer canvas on Cloudflare Workers + Durable Objects</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">56</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">27</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteo5n/title_after_months_of_building_alongside_my/" target="_blank" class="news-link">Title: After months of building alongside my full-time job, I finally launched my portfolio tracking app on iOS</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">57</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">27</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xterro/steam_launch_numbers_a_dark_cave/" target="_blank" class="news-link">Steam Launch Numbers - A Dark Cave</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">58</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Apps</span><span class="rank-num ">27-28</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/apps/comments/1xszzbw/i_made_soulcrate_soulseek_on_android/" target="_blank" class="news-link">I made Soulcrate: Soulseek on Android</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">59</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">27</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtcxkr/i_built_a_desktop_ai_coding_harness_to_make/" target="_blank" class="news-link">I built a desktop AI coding harness to make autonomous engineering work easier to inspect</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">60</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">28</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtcvun/i_made_a_mac_updater_that_checks_sparkle_github/" target="_blank" class="news-link">I made a Mac updater that checks Sparkle, GitHub, Homebrew and Tauri apps in one place</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">61</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">29</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtcujz/i_built_a_browserbased_gif_tool_for_photos_video/" target="_blank" class="news-link">I built a browser-based GIF tool for photos, video clips, captions, and compression</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">62</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">29</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtejut/released_my_small_reddit_webgame_this_week_heres/" target="_blank" class="news-link">Released my small Reddit web-game this week! Here&#x27;s a small level I made showcasing some of the mechanics</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">63</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtekbe/i_built_a_mock_interview_platform_called/" target="_blank" class="news-link">I built a mock interview platform called Interviewlary you can practice in English or Arabic using an actual job description</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">64</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtegli/i_made_a_free_browser_boxing_game_where_the/" target="_blank" class="news-link">I made a free browser boxing game where the boxers talk and every Ranked fight gets a full recording</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">65</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">31</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtejyk/i_built_a_household_budget_app_for_my_wife_and_me/" target="_blank" class="news-link">I built a household budget app for my wife and me, and now it&#x27;s in public beta 🚀</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">66</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">31</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtcqvm/i_built_a_free_movie_discovery_site_a_map_of_83k/" target="_blank" class="news-link">I built a free movie discovery site: a map of 83k titles, search by feel, and where to stream per country</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">67</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">32</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtcm2q/i_made_my_fantasy_novel_into_a_gift_you_can_send/" target="_blank" class="news-link">I made my fantasy novel into a gift you can send a friend for free</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">68</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">33</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtegf6/i_built_a_northern_lights_forecast_that_answers/" target="_blank" class="news-link">I built a northern lights forecast that answers one question: will I see it tonight, from where I am, and when?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">69</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">33</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtc8at/i_made_neat_quit_close_your_last_mac_window_and/" target="_blank" class="news-link">I made Neat Quit: close your last Mac window and let the app quit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">70</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">33</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xteaq5/2_days_until_launch_almost_300_wishlists_with/" target="_blank" class="news-link">2 days until launch: almost 300 wishlists with zero ad budget. Not a lot, but I’m genuinely happy</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">71</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">34</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtc793/i_built_a_dynamic_qr_code_generator_where_free/" target="_blank" class="news-link">I built a dynamic QR code generator where free codes never expire – would love feedback</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">72</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">35</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xte527/would_you_include_a_character_showcase_like_this/" target="_blank" class="news-link">Would you include a character showcase like this in your game trailer?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">73</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">36</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtedlt/i_made_a_water_tracker_where_an_axolotl_fills_up/" target="_blank" class="news-link">I made a water tracker where an axolotl fills up with every drink and gets grumpy on your Lock Screen when you forget</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">74</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">36</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtbz0o/i_made_mara_a_free_app_that_automatically_mixes/" target="_blank" class="news-link">I made MARA, a free app that automatically mixes your Ableton Live project (macOS and Windows)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">75</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">37</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtedd5/i_had_6_terminals_open_for_my_ai_coding_agents_so/" target="_blank" class="news-link">i had 6 terminals open for my AI coding agents, so i built one app for all of them</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">76</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">37</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtbx52/i_built_a_tool_that_turns_html_lottie_and_rive/" target="_blank" class="news-link">I built a tool that turns HTML, Lottie and Rive animations into video, transparent if you want. What would you use it for?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">77</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">38</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteci0/i_made_a_small_browser_game_would_love_your/" target="_blank" class="news-link">I made a small browser game, would love your feedback</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">78</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">40</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtean0/i_built_a_business_decisionreview_service_but_im/" target="_blank" class="news-link">I built a business decision-review service, but I&#x27;m struggling to explain why anyone would buy it</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">79</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">40</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtba9m/i_made_an_iphone_reader_that_keeps_your_place/" target="_blank" class="news-link">I made an iPhone reader that keeps your place when your mind wanders</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">80</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">40</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtdfas/after_the_wane_my_new_game_with_rotoscopy_is_now/" target="_blank" class="news-link">After the Wane, my new game with rotoscopy is now out!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">81</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">41</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtba2l/i_made_a_couple_app_where_your_courtroom/" target="_blank" class="news-link">I made a couple app where your courtroom characters go home together after the argument</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">82</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">43</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtb07p/i_made_an_ai_salesperson_that_gives_live_demos_of/" target="_blank" class="news-link">I made an AI salesperson that gives live demos of real software, any hour of the day</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">83</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">44</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte84d/i_built_a_tool_that_finds_useful_and_tailored/" target="_blank" class="news-link">I built a tool that finds useful and tailored signals on X for tech companies</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">84</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">44</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtceq5/showcase_built_a_lightweight_web_scraper_media/" target="_blank" class="news-link">[Showcase] Built a lightweight web scraper &amp; media extraction utility (Looking for feedback)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">85</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">44</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtazpf/i_made_a_football_comparison_screen_that_shows/" target="_blank" class="news-link">I made a football comparison screen that shows why playing time matters</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">86</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">45</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtavf7/i_made_a_code_editor_for_phone/" target="_blank" class="news-link">I made a Code Editor for phone.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">87</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">46</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte7fz/new_app_for_turism/" target="_blank" class="news-link">New app for turism</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">88</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">46</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtc19k/which_launch_directories_worked_for_you/" target="_blank" class="news-link">Which Launch Directories worked for you?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">89</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">47</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte6z2/i_built_a_free_android_trading_journal_app_that/" target="_blank" class="news-link">I built a free Android trading journal app that tells you to stop after a losing streak</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">90</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">47</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtbznk/best_free_places_to_launch_a_saas_right_now/" target="_blank" class="news-link">Best free places to launch a SaaS right now?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">91</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">48</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtclcm/i_just_launched_expense_notebook_a_simple_free/" target="_blank" class="news-link">I just launched Expense Notebook – a simple, free Android app to track your money without the hassle!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">92</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">49</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtaa3v/removebg_is_shutting_down_so_i_made_an_alternative/" target="_blank" class="news-link">Remove.bg is shutting down so I made an alternative</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">93</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">50</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte6kr/i_built_a_live_map_of_the_worlds_conflicts_as_a/" target="_blank" class="news-link">I built a live map of the world&#x27;s conflicts as a solo project. What would make it actually useful to you?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">94</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">50</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtbv90/do_ugc_ads_actually_increase_sales_i_built_a_tool/" target="_blank" class="news-link">Do UGC Ads actually increase sales? I built a tool for this.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">95</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">50</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xt9opl/i_made_a_youtube_timeline_to_get_away_from/" target="_blank" class="news-link">I made a YouTube timeline to get away from endless recommendations</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name"># AI site intent AI ChatGPT Claude Gemini LLM AI tool AI video AI image Midjourney Stable Diffusion</div>
+                            <div class="word-count hot">62 items</div>
+                        </div>
+                        <div class="word-index">2/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num top">1</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xt84dq/tom_struggles_in_ai_world/" target="_blank" class="news-link">Tom Struggles in AI world</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt7a3j/why_the_sudden_shift_on_ai_usage/" target="_blank" class="news-link">Why the sudden shift on AI usage?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SomebodyMakeThis</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SomebodyMakeThis/comments/1xtdzut/venice_private_uncensored_ai/" target="_blank" class="news-link">Venice | Private, Uncensored AI</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt4ob3/has_anyone_genuinley_gotten_high_intent_meetings/" target="_blank" class="news-link">Has anyone genuinley gotten high intent meetings from any of those AI booking services? i will not promote</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num top">3</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfeeq/building_a_keyvalue_store_as_an_experiment_in/" target="_blank" class="news-link">Building a key-value store as an experiment in AI-assisted research and development</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num top">3</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsqysz/researchers_gave_ai_agents_a_1cent_daily_spending/" target="_blank" class="news-link">Researchers gave AI agents a 1-cent daily spending cap, and 9 of 10 models raised it themselves</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num high">4</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xssda1/gartner_ai_will_create_more_jobs_than_it_destroys/" target="_blank" class="news-link">Gartner: AI will create more jobs than it destroys by 2030, generating a net gain of 1.7 million jobs globally</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num high">5</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt2iwq/linus_torvalds_says_that_ai_fixes_drove_most_of/" target="_blank" class="news-link">Linus Torvalds says that AI fixes drove most of the progress in latest Linux kernel — BPF saw more AI-written fixes than bug reports, possibly indicating a tidal shift for open-source maintainers tired of flood of junk reports</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SomebodyMakeThis</span><span class="rank-num high">5</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SomebodyMakeThis/comments/1xtcurq/looking_for_a_technical_cofounder_to_build/" target="_blank" class="news-link">Looking for a Technical Co-Founder to Build Discipline AI – A freedom from being slave of phones</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SelfHosted</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/selfhosted/comments/1xtbx7a/docktail_18_tailscale_services_for_your_docker/" target="_blank" class="news-link">DockTail 1.8: Tailscale Services for your Docker containers, now with custom paths, multiple services per container and no host ports needed</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">6</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsuijs/hot_take_terry_davis_wouldve_loved_ai/" target="_blank" class="news-link">Hot Take: Terry Davis Would’ve Loved AI</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">6-7</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xtesqb/how_did_you_choose_your_email_provider_and_did/" target="_blank" class="news-link">How did you choose your email provider, and did you outgrow it? (I WILL NOT PROMOTE)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">7</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtfapp/metadataaka_ai_labels_remover/" target="_blank" class="news-link">Metadata(aka ai labels) remover</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">8</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtc9z5/i_created_an_ai_with_the_help_of_an_ai_can_i/" target="_blank" class="news-link">I created an AI with the help of an AI: can I really say that I am its creator?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Hacker News</span><span class="rank-num ">8</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://9to5mac.com/2026/11/10/apple-has-new-mac-app-coming-to-make-running-local-ai-models-easy/" target="_blank" class="news-link">Apple has new Mac app coming to make running local AI models easy</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">16</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">10</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf7r9/how_much_of_your_side_project_is_written_by_ai/" target="_blank" class="news-link">how much of your side project is written by AI now, and do you still read all of it?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">17</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">10</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt2t5n/anthropic_reveals_ipo_price_as_ai_market_jitters/" target="_blank" class="news-link">Anthropic Reveals IPO Price as AI Market Jitters Grow</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">18</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">12</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsuvgl/im_human_you_wombat_although_thats_exactly_what/" target="_blank" class="news-link">I&#x27;m Human, You Wombat! Although That&#x27;s Exactly What AI Would Say!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">19</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf4k3/built_a_waitlist_for_a_shoulder_rehab_app_that/" target="_blank" class="news-link">Built a waitlist for a shoulder rehab app that uses tests instead of a calendar, roast it</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">20</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtbpqg/i_think_corporate_made_the_absolute_biggest/" target="_blank" class="news-link">I think corporate made the absolute biggest mistake if the century with AI</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">21</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xswm0b/microsoft_patent_describes_paying_you_to_train_ai/" target="_blank" class="news-link">Microsoft patent describes paying you to train AI on your idle GPU</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">22</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt92su/how_do_you_price_an_ai_product_when_the_actual_ai/" target="_blank" class="news-link">How do you price an AI product when the actual AI costs are so low?（i will not promote）</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">23</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xst7r5/suggestion_for_100_tier_ai_subscription/" target="_blank" class="news-link">Suggestion for 100$ tier AI subscription</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">24</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt8wa8/how_do_you_price_an_ai_product_when_the_actual_ai/" target="_blank" class="news-link">How do you price an AI product when the actual AI costs are so low? - i will not promote</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">25</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt6grg/joining_a_company_with_an_invention_assignment/" target="_blank" class="news-link">Joining a company with an invention assignment clause while building my own AI side project. How did you protect yours? (I will not promote)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">26</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">16-30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt5of1/difficulty_raising_funds_for_deep_tech_startup_i/" target="_blank" class="news-link">Difficulty raising funds for deep tech startup (I will not promote)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">27</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">17</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf0uv/how_do_you_organize_and_back_up_your_chatgpt_and/" target="_blank" class="news-link">How do you organize and back up your ChatGPT and Claude conversations?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">28</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">17</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xswqzl/eu_presses_openai_anthropic_for_more_details_on/" target="_blank" class="news-link">EU presses OpenAI, Anthropic for more details on AI safety incidents</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">29</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">18</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xt4xgv/100_paying_users_in_3_days_on_our_ai_bookkeeping/" target="_blank" class="news-link">100 paying users in 3 days on our AI bookkeeping SaaS. Here&#x27;s what worked.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">30</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">19</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtccz4/how_well_does_llms_handle_real_work_i_put_hy4_to/" target="_blank" class="news-link">How well does LLMs handle real work? I put Hy4 to the test.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">31</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">20</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xteywa/which_lightning_bullet_trail_do_you_prefer_b_or_c/" target="_blank" class="news-link">Which lightning bullet trail do you prefer? B or C? A is what I currently have.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">32</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">23</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtf1w4/would_you_let_ai_translate_a_real_client_call/" target="_blank" class="news-link">Would you let AI translate a real client call?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">33</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtf311/has_anyone_claimed_their_business_in_the_new/" target="_blank" class="news-link">Has anyone claimed their business in the new ChatGPT Business Hub yet? What data do you actually get?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">34</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtdzxd/ai_agents_are_becoming_software_buyers_and/" target="_blank" class="news-link">AI agents are becoming software buyers, and businesses aren&#x27;t ready</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">35</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">26</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteogf/flock_speech_tiny_ai_voices_that_fit_in_44_mb_and/" target="_blank" class="news-link">Flock Speech: tiny AI voices that fit in 44 MB and run on any laptop. This video is narrated by one.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">36</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">27</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtcs41/sustainable_ai_the_economics_of_intelligence/" target="_blank" class="news-link">Sustainable AI: The Economics of Intelligence</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">37</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">28</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtecum/are_we_ready_for_teams_where_humans_and_ai_agents/" target="_blank" class="news-link">Are we ready for teams where humans and AI agents work together?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">38</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">29</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtemxy/let_ai_agent_find_and_negotiate_for_you/" target="_blank" class="news-link">Let AI agent find and negotiate for you</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">39</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">29</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtbfeq/claude_sheets_and_whiteboards_are_in_paid_beta/" target="_blank" class="news-link">Claude Sheets and Whiteboards are in paid beta — you can keep the tracker in Claude, but don&#x27;t uninstall Excel yet</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">40</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit Startups</span><span class="rank-num ">29</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/startups/comments/1xt8s0e/how_do_you_price_an_ai_product_when_the_actual_ai/" target="_blank" class="news-link">How do you price an AI product when the actual AI costs are so low?i will not promote)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">41</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtas8c/spotifys_ai_dj_can_keep_picking_songs_with_the/" target="_blank" class="news-link">Spotify&#x27;s AI DJ can keep picking songs with the commentary turned off</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">42</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">31</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xte6pg/for_sale_nodge_aipowered_purchase_decision_saas/" target="_blank" class="news-link">For Sale: Nodge – AI-Powered Purchase Decision SaaS | Next.js + Supabase</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">43</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">32</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtehi7/tradyx_an_ai_analysis_and_trading_journal_built/" target="_blank" class="news-link">[TradYX] - An AI analysis and trading journal built only for gold (XAUUSD)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">44</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">32</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt4vho/is_lifelong_instantaneous_memory_recall_the_next/" target="_blank" class="news-link">Is lifelong, instantaneous memory recall the next big AI bottleneck? Gemini thinks so. What do you think?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">45</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">33</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt3vzk/llm_hallucination_epistemic_uncertainty_many/" target="_blank" class="news-link">LLM hallucination &amp; epistemic uncertainty: many studies frame hallucination as factual error, but fewer treat it as a failure of calibrated confidence.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">46</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">34</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt2fcj/anthropics_claude_fable_52_built_a_working_os/" target="_blank" class="news-link">Anthropic&#x27;s Claude Fable 5.2 built a working OS from scratch using 1,000+ AI agents over 8 days</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">47</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">35</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt1vs9/gemini_notebook_privacy_concerns/" target="_blank" class="news-link">Gemini Notebook Privacy Concerns</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">48</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">36</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtdx1a/why_did_i_name_my_email_marketing_saas_ternloop/" target="_blank" class="news-link">Why did I name my email marketing SaaS &quot;Ternloop&quot;?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">49</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">36</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsz5qi/fighting_misinformation_with_ai_meet_traunes_ai/" target="_blank" class="news-link">🌍 Fighting misinformation with AI! Meet TRAUNES AI — Verify. Understand. Act. 🇨🇬 We need your support in the Meta AI Developer Hackathon! 🗳️ 👉 Vote here: https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/gallery/5259 #TRAUNESAI #MetaAIHackathon #AfricanInnovation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">50</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">38</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsx4av/wanted_to_share_this_book_the_ai_native_state_by/" target="_blank" class="news-link">Wanted to share this book &#x27;The AI Native State&#x27; by Prashant Nikam and Ashwin Srivastava.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">51</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">39</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsw1qc/how_ai_agents_work/" target="_blank" class="news-link">How AI agents work</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">52</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">40</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsujqb/trust_but_verify_implementing_frontier_ai_policy/" target="_blank" class="news-link">Trust but Verify: Implementing Frontier AI Policy in California and Beyond</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">53</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">41</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte9ol/do_we_really_need_more_ai_gadgets/" target="_blank" class="news-link">Do we really need more AI gadgets?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">54</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">41</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtdakr/i_priced_transactional_email_at_10k_50k_and_200k/" target="_blank" class="news-link">I priced transactional email at 10k, 50k and 200k a month. The recommended plan was the wrong one twice</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">55</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">41</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xssczj/i_ran_136_tests_to_see_if_hidden_text_on_a_web/" target="_blank" class="news-link">I ran 136 tests to see if hidden text on a web page can still trick an AI browser agent</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">56</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">42</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsrkkg/when_code_becomes_unreadable_are_we_losing/" target="_blank" class="news-link">When Code Becomes Unreadable: Are We Losing Control to AI</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">57</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">43</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtcm4g/ai_assistants_are_the_new_front_page_a_10point/" target="_blank" class="news-link">AI assistants are the new front page: a 10-point checklist to see if ChatGPT can cite your product</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">58</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">47</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt05us/tons_of_people_hate_ai_and_call_whatever_made/" target="_blank" class="news-link">Tons of people hate ai and call whatever made with it slop, but with almost every large company using it, is it fair the hate, specially on indie studios?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">59</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Hacker News</span><span class="rank-num ">47</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://policy-wire.com/ukraine-pivots-to-israeli-italian-satellite-tech-to-bypass-starlink-restrictions/" target="_blank" class="news-link">Ukraine Pivots to Israeli-Italian Satellite Tech to Bypass Starlink Restrictions</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">60</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">48</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtbzeg/best_aeogeoai_seo_agencies_for_tech_companies/" target="_blank" class="news-link">Best AEO/GEO/AI SEO Agencies for Tech companies?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">61</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">49</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtbgih/claude_can_now_join_your_google_meet_calls_are_we/" target="_blank" class="news-link">Claude can now join your Google Meet calls . Are we getting an AI coworker now?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">62</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">50</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xt8yuy/i_believe_i_have_found_a_successful_turing_test/" target="_blank" class="news-link">I believe i have found a successful &quot;turing test&quot; for LLMs - an &quot;anti-coherence&quot; test</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name"># Game site intent (codes / wiki / guide) codes wiki guide tier list game gaming Roblox Steam</div>
+                            <div class="word-count hot">31 items</div>
+                        </div>
+                        <div class="word-index">3/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xsul1u/video_game_big_walk_gets_review_bombed_for_using/" target="_blank" class="news-link">Video game Big Walk gets review bombed for using AI to fix a bug in Unity, accounting for 10 lines of code. 19 Independent Games Festival jurors declared they will refuse to vote for it due to AI use</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num top">3</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtcr9d/tim_cook_played_my_game_penalty_area_face2face/" target="_blank" class="news-link">Tim Cook played my game, Penalty Area: Face2Face.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num high">4</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtc5ee/what_we_learned_from_steam_next_fest_witch_dragon/" target="_blank" class="news-link">What We Learned From Steam Next Fest |Witch &amp; Dragon: Hope of Elements</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">7</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtbbsx/gpu_companies_built_everything_on_the_back_of/" target="_blank" class="news-link">GPU Companies built everything on the back of gamers, and now gamers cannot afford them.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">10</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt5fic/steamworks_kyc_wait_time_is_now_up_to_45_business/" target="_blank" class="news-link">Steamworks KYC wait time is now up to 45 business days (was 30)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">12</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtff66/hi_im_mkx95_okay_hey_everyone_im_an_indie/" target="_blank" class="news-link">hi I’m MKX95 Okay. Hey everyone, I’m an indie developer working on a 2D linear shooter called Ronan to Payback. It’s a simple action game with a clear story and straightforward levels. Right now, I’m working on new stages and refining the characters. I’d love an game series for 5 The main project</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">13</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtfev3/demo_on_itchio_vs_steam/" target="_blank" class="news-link">Demo on itch.io vs Steam</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtf7s6/i_cant_draw_so_this_is_how_i_design_enemies_for/" target="_blank" class="news-link">I can&#x27;t draw so this is how I design enemies for my horror farming game (This is a cabbage head not a flower btw)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">16</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt3var/how_do_we_playtest_an_extremely_niche_game/" target="_blank" class="news-link">How do we playtest an extremely niche game?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">17</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt4zhx/any_tips_for_pitching_a_game_idea_or_making_a/" target="_blank" class="news-link">Any tips for pitching a game idea or making a presentation?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">18</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtf56y/what_750000_reddit_views_did_to_my_steam_traffic/" target="_blank" class="news-link">What 750,000 Reddit views did to my Steam traffic &amp; wishlists</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">24</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xtfetj/demo_on_itchio_vs_steam/" target="_blank" class="news-link">Demo on itch.io vs Steam</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xtf3nf/what_750000_reddit_views_did_to_my_steam_traffic/" target="_blank" class="news-link">What 750,000 Reddit views did to my Steam traffic &amp; wishlists</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">14</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xteq2w/orbitwist_my_free_android_game_about_staying/" target="_blank" class="news-link">Orbitwist - my free Android game about staying visible on a rotating planet</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">15</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">26</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xteoh3/anyone_elses_game_having_a_near_impossible_time/" target="_blank" class="news-link">Anyone else&#x27;s game having a near impossible time gaining wishlists right now?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">16</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">28</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xte6sx/the_independent_games_festival_is_owned_by/" target="_blank" class="news-link">The Independent Games Festival is owned by Informa PLC.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">17</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt7mrd/whats_the_real_concern_of_game_idea_theft/" target="_blank" class="news-link">What&#x27;s the real concern of game idea theft</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">18</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">31-37</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xteczn/resource_free_tactical_military_voice_pack_18/" target="_blank" class="news-link">[RESOURCE] Free Tactical Military Voice Pack (18 Bilingual WAVs - DE/EN) for Indie Shooters &amp; Strategy Games</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">19</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">32</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt5heu/2d_game_art_help/" target="_blank" class="news-link">2D game art help!!!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">20</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">32</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtec9s/any_suggestion_to_improve_my_games_art/" target="_blank" class="news-link">Any suggestion to improve my game&#x27;s art consistency, first time solo developer with zero experience in almost everything.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">21</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">34</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xte57r/im_trying_to_create_a_new_horror_game_genre_is_it/" target="_blank" class="news-link">I&#x27;m Trying to Create a New Horror Game Genre. Is It Worth Exploring?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">22</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">36</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtdx84/my_second_games_prototype_luck_be_a_landlord/" target="_blank" class="news-link">My second game&#x27;s prototype: &#x27;Luck be a landlord&#x27; meets match-3 game</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">23</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">42</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt999x/belgarion_games_on_x_sir_we_have_a_pit_problem/" target="_blank" class="news-link">Belgarion Games on X: &quot;Sir, We Have a Pit Problem</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">24</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">42</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtb20u/title_im_16_and_built_a_browser_game_that_uses/" target="_blank" class="news-link">Title: I&#x27;m 16 and built a browser game that uses your body as the controller</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">25</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">42</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtdcjm/i_shipped_my_first_solo_ios_game_in_a_month_turns/" target="_blank" class="news-link">I shipped my first solo iOS game in a month. Turns out shipping was the easy part.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">26</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">43</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtd9o1/players_told_me_my_aicouncil_game_gives_too/" target="_blank" class="news-link">Players told me my AI-council game gives too little feedback – here&#x27;s what I&#x27;m changing</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">27</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">44</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt54f4/my_fair_and_realistic_prediction_for_the_future/" target="_blank" class="news-link">My fair and realistic prediction for the future of AI in game dev</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">28</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit GameDev</span><span class="rank-num ">45</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/gamedev/comments/1xt2mcv/steam_took_my_100_made_me_wait_60_days_and_then/" target="_blank" class="news-link">Steam took my $100, made me wait 60 days, and then rejected my developer verification over an address</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">29</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">46</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtcumk/ai_is_making_games_easy_to_make_so_what_makes_one/" target="_blank" class="news-link">ai is making games easy to make, so what makes one actually blow up now?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">30</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IndieDev</span><span class="rank-num ">47</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IndieDev/comments/1xtcr4g/made_a_little_idle_fishing_game_first_thing_ive/" target="_blank" class="news-link">made a little idle fishing game, first thing i&#x27;ve ever made</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">31</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">48</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtbrkv/what_is_artificial_intelligence_ai_a/" target="_blank" class="news-link">What Is Artificial Intelligence (AI)? A Beginner-Friendly Guide for 2026</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name"># Tool site intent (something calculable / generatable) generator calculator converter checker template tool website web app extension</div>
+                            <div class="word-count hot">13 items</div>
+                        </div>
+                        <div class="word-index">4/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit InternetIsBeautiful</span><span class="rank-num top">2</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/InternetIsBeautiful/comments/1xtbpgh/johnorg_the_most_interestingly_bland_website/" target="_blank" class="news-link">John.org The most interestingly bland website.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit InternetIsBeautiful</span><span class="rank-num top">3</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/InternetIsBeautiful/comments/1xtboa0/johnorg_the_most_interestingly_bland_website/" target="_blank" class="news-link">John.org the most interestingly bland website</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">3</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit InternetIsBeautiful</span><span class="rank-num high">4</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/InternetIsBeautiful/comments/1xtafml/a_website_that_only_unlocks_when_one_person_from/" target="_blank" class="news-link">A website that only unlocks when one person from every country on Earth has visited</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">4</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num high">5</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtez3h/best_and_cheapest_website_builder_domain_hosting/" target="_blank" class="news-link">Best and Cheapest Website Builder ,domain &amp; Hosting?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">5</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xtf3pb/earthquake_alert_tracker_easy_to_use_earthquake/" target="_blank" class="news-link">🌍 Earthquake Alert Tracker: Easy to Use, Earthquake Alerts &amp; Essential Emergency Tools!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">6</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">14</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xt8yhn/need_me_for_web_design_150_per_website_let_me/" target="_blank" class="news-link">Need me for web design? 1.50$ per website let me know. 0.20 cents an hour</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">7</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">21</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteumd/backup_your_ai_conversation_from_chatgptclaude/" target="_blank" class="news-link">Backup Your Ai Conversation From Chatgpt&amp;Claude With Chrome Extension</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">8</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">24</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xte828/are_businesses_without_websites_actually_worth/" target="_blank" class="news-link">Are Businesses Without Websites Actually Worth Targeting?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">9</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">25</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xteopq/backup_ai_conversation_chatgptclaude_with_chrome/" target="_blank" class="news-link">Backup Ai Conversation Chatgpt&amp;Claude With Chrome Extension</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">10</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit AI</span><span class="rank-num ">28</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/artificial/comments/1xtck96/do_ai_tools_improve_coding_efficiency_in_real/" target="_blank" class="news-link">Do AI tools improve coding efficiency in real projects?</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">11</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xteaj2/im_building_a_voicetocode_tool_because_i_think/" target="_blank" class="news-link">I&#x27;m building a voice-to-code tool because I think programming should feel more natural</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">12</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit IMadeThis</span><span class="rank-num ">30</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/IMadeThis/comments/1xtctsn/looking_for_1020_people_to_test_my_movie/" target="_blank" class="news-link">Looking for 10–20 people to test my movie recommendation website!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">13</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SideProject</span><span class="rank-num ">48</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SideProject/comments/1xte6vg/businesses_with_websites_or_without_who_should/" target="_blank" class="news-link">Businesses With Websites or Without? Who Should You Target as a Web Designer?</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="word-group">
+                    <div class="word-header">
+                        <div class="word-info">
+                            <div class="word-name"># Tutorial / how-to intent how to how-to tutorial explained</div>
+                            <div class="word-count ">2 items</div>
+                        </div>
+                        <div class="word-index">5/5</div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">1</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit WebDev</span><span class="rank-num ">9</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/webdev/comments/1xtc1vz/i_thought_building_an_embeddable_customer_support/" target="_blank" class="news-link">I thought building an embeddable customer support chatbot in 2026 would take 2 weeks. It took 6 months. Here are the 5 hardest problems that tutorials never mention.</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="news-item new">
+                        <div class="news-number">2</div>
+                        <div class="news-content">
+                            <div class="news-header">
+                                <span class="source-name">Reddit SaaS</span><span class="rank-num ">15</span><span class="time-info">11-33</span>
+                            </div>
+                            <div class="news-title"><a href="https://www.reddit.com/r/SaaS/comments/1xtc3po/i_thought_building_an_embeddable_customer_support/" target="_blank" class="news-link">I thought building an embeddable customer support chatbot in 2026 would take 2 weeks. It took 6 months. Here are the 5 hardest problems that tutorials never mention.</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div class="footer-content">
+                    Generated by <span class="project-name">TrendRadar</span> ·
+                    <a href="https://github.com/sansan0/TrendRadar" target="_blank" class="footer-link">
+                        GitHub Open Source Project
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            async function saveAsImage() {
+                const button = event.target;
+                const originalText = button.textContent;
+                
+                try {
+                    button.textContent = 'Generating...';
+                    button.disabled = true;
+                    window.scrollTo(0, 0);
+
+                    // Wait for page to stabilize
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    // Hide buttons before screenshot
+                    const buttons = document.querySelector('.save-buttons');
+                    buttons.style.visibility = 'hidden';
+
+                    // Wait again to ensure buttons are fully hidden
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const container = document.querySelector('.container');
+                    
+                    const canvas = await html2canvas(container, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.5,
+                        useCORS: true,
+                        allowTaint: false,
+                        imageTimeout: 10000,
+                        removeContainer: false,
+                        foreignObjectRendering: false,
+                        logging: false,
+                        width: container.offsetWidth,
+                        height: container.offsetHeight,
+                        x: 0,
+                        y: 0,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: window.innerWidth,
+                        windowHeight: window.innerHeight
+                    });
+                    
+                    buttons.style.visibility = 'visible';
+                    
+                    const link = document.createElement('a');
+                    const now = new Date();
+                    const filename = `TrendRadar_Trending_News_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.png`;
+                    
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    
+                    // 触发下载
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    button.textContent = '保存Success!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                    
+                } catch (error) {
+                    const buttons = document.querySelector('.save-buttons');
+                    buttons.style.visibility = 'visible';
+                    button.textContent = '保存Failed';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                }
+            }
+            
+            async function saveAsMultipleImages() {
+                const button = event.target;
+                const originalText = button.textContent;
+                const container = document.querySelector('.container');
+                const scale = 1.5; 
+                const maxHeight = 5000 / scale;
+                
+                try {
+                    button.textContent = 'Analyzing...';
+                    button.disabled = true;
+
+                    // Get all possible split elements
+                    const newsItems = Array.from(container.querySelectorAll('.news-item'));
+                    const wordGroups = Array.from(container.querySelectorAll('.word-group'));
+                    const newSection = container.querySelector('.new-section');
+                    const errorSection = container.querySelector('.error-section');
+                    const header = container.querySelector('.header');
+                    const footer = container.querySelector('.footer');
+                    
+                    // Calculate element positions and heights
+                    const containerRect = container.getBoundingClientRect();
+                    const elements = [];
+
+                    // Add header as a required element
+                    elements.push({
+                        type: 'header',
+                        element: header,
+                        top: 0,
+                        bottom: header.offsetHeight,
+                        height: header.offsetHeight
+                    });
+                    
+                    // Add error information (if exists)
+                    if (errorSection) {
+                        const rect = errorSection.getBoundingClientRect();
+                        elements.push({
+                            type: 'error',
+                            element: errorSection,
+                            top: rect.top - containerRect.top,
+                            bottom: rect.bottom - containerRect.top,
+                            height: rect.height
+                        });
+                    }
+                    
+                    // Process news-items by word-group
+                    wordGroups.forEach(group => {
+                        const groupRect = group.getBoundingClientRect();
+                        const groupNewsItems = group.querySelectorAll('.news-item');
+
+                        // Add word-group header section
+                        const wordHeader = group.querySelector('.word-header');
+                        if (wordHeader) {
+                            const headerRect = wordHeader.getBoundingClientRect();
+                            elements.push({
+                                type: 'word-header',
+                                element: wordHeader,
+                                parent: group,
+                                top: groupRect.top - containerRect.top,
+                                bottom: headerRect.bottom - containerRect.top,
+                                height: headerRect.height
+                            });
+                        }
+                        
+                        // Add each news-item
+                        groupNewsItems.forEach(item => {
+                            const rect = item.getBoundingClientRect();
+                            elements.push({
+                                type: 'news-item',
+                                element: item,
+                                parent: group,
+                                top: rect.top - containerRect.top,
+                                bottom: rect.bottom - containerRect.top,
+                                height: rect.height
+                            });
+                        });
+                    });
+                    
+                    // Add new news section
+                    if (newSection) {
+                        const rect = newSection.getBoundingClientRect();
+                        elements.push({
+                            type: 'new-section',
+                            element: newSection,
+                            top: rect.top - containerRect.top,
+                            bottom: rect.bottom - containerRect.top,
+                            height: rect.height
+                        });
+                    }
+                    
+                    // Add footer
+                    const footerRect = footer.getBoundingClientRect();
+                    elements.push({
+                        type: 'footer',
+                        element: footer,
+                        top: footerRect.top - containerRect.top,
+                        bottom: footerRect.bottom - containerRect.top,
+                        height: footer.offsetHeight
+                    });
+                    
+                    // Calculate split points
+                    const segments = [];
+                    let currentSegment = { start: 0, end: 0, height: 0, includeHeader: true };
+                    let headerHeight = header.offsetHeight;
+                    currentSegment.height = headerHeight;
+                    
+                    for (let i = 1; i < elements.length; i++) {
+                        const element = elements[i];
+                        const potentialHeight = element.bottom - currentSegment.start;
+                        
+                        // Check if new segment is needed
+                        if (potentialHeight > maxHeight && currentSegment.height > headerHeight) {
+                            // Split at previous element's end
+                            currentSegment.end = elements[i - 1].bottom;
+                            segments.push(currentSegment);
+
+                            // Start new segment
+                            currentSegment = {
+                                start: currentSegment.end,
+                                end: 0,
+                                height: element.bottom - currentSegment.end,
+                                includeHeader: false
+                            };
+                        } else {
+                            currentSegment.height = potentialHeight;
+                            currentSegment.end = element.bottom;
+                        }
+                    }
+                    
+                    // Add last segment
+                    if (currentSegment.height > 0) {
+                        currentSegment.end = container.offsetHeight;
+                        segments.push(currentSegment);
+                    }
+                    
+                    button.textContent = `Generating (0/${segments.length})...`;
+
+                    // Hide save buttons
+                    const buttons = document.querySelector('.save-buttons');
+                    buttons.style.visibility = 'hidden';
+
+                    // Generate image for each segment
+                    const images = [];
+                    for (let i = 0; i < segments.length; i++) {
+                        const segment = segments[i];
+                        button.textContent = `Generating (${i + 1}/${segments.length})...`;
+                        
+                        // Create temporary container for screenshot
+                        const tempContainer = document.createElement('div');
+                        tempContainer.style.cssText = `
+                            position: absolute;
+                            left: -9999px;
+                            top: 0;
+                            width: ${container.offsetWidth}px;
+                            background: white;
+                        `;
+                        tempContainer.className = 'container';
+                        
+                        // Clone container content
+                        const clonedContainer = container.cloneNode(true);
+
+                        // Remove save buttons from cloned content
+                        const clonedButtons = clonedContainer.querySelector('.save-buttons');
+                        if (clonedButtons) {
+                            clonedButtons.style.display = 'none';
+                        }
+                        
+                        tempContainer.appendChild(clonedContainer);
+                        document.body.appendChild(tempContainer);
+                        
+                        // Wait for DOM update
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        // Use html2canvas to capture specific area
+                        const canvas = await html2canvas(clonedContainer, {
+                            backgroundColor: '#ffffff',
+                            scale: scale,
+                            useCORS: true,
+                            allowTaint: false,
+                            imageTimeout: 10000,
+                            logging: false,
+                            width: container.offsetWidth,
+                            height: segment.end - segment.start,
+                            x: 0,
+                            y: segment.start,
+                            windowWidth: window.innerWidth,
+                            windowHeight: window.innerHeight
+                        });
+                        
+                        images.push(canvas.toDataURL('image/png', 1.0));
+                        
+                        // Clean up temporary container
+                        document.body.removeChild(tempContainer);
+                    }
+                    
+                    // Restore button visibility
+                    buttons.style.visibility = 'visible';
+
+                    // Download all images
+                    const now = new Date();
+                    const baseFilename = `TrendRadar_Trending_News_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+                    
+                    for (let i = 0; i < images.length; i++) {
+                        const link = document.createElement('a');
+                        link.download = `${baseFilename}_part${i + 1}.png`;
+                        link.href = images[i];
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Delay to avoid browser blocking multiple downloads
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+
+                    button.textContent = `Saved ${segments.length} images!`;
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Segment save failed:', error);
+                    const buttons = document.querySelector('.save-buttons');
+                    buttons.style.visibility = 'visible';
+                    button.textContent = 'Save failed';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                }
+            }
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                window.scrollTo(0, 0);
+            });
+        </script>
+    </body>
+    </html>
+    
